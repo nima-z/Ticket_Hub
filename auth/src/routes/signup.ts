@@ -1,10 +1,28 @@
-const express = require("express");
+import express, { Request, Response } from "express";
+import { body, validationResult } from "express-validator";
 
 const router = express.Router();
 
-router.post("/api/users/signup", (req: any, res: any) => {
-  const { email, password } = req.body;
-  res.send("sign up");
-});
+router.post(
+  "/api/users/signup",
+  [
+    body("email").isEmail().withMessage("Email must be valid"),
+    body("password")
+      .trim()
+      .isLength({ min: 4, max: 20 })
+      .withMessage("Password must be between 4 and 20 characters"),
+  ],
+  (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      throw new Error("Invalid Email or Password");
+    }
+
+    const { email, password } = req.body;
+
+    res.status(202).json({ message: "Signed in", email, password });
+  }
+);
 
 export { router as signUpRouter };
