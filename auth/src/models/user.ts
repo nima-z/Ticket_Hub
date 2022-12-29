@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+//============================================================================
 import { passwordHasher } from "../services/password";
+//============================================================================
 
 interface UserAttrs {
   email: string;
@@ -23,6 +25,14 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  toJSON: {
+    transform(doc: any, ret: any) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.password;
+      delete ret.__v;
+    },
   },
 });
 
