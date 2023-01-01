@@ -6,21 +6,23 @@ import { app } from "../app";
 
 let mongo: any;
 
-async function beforeAll() {
+beforeAll(async () => {
+  process.env.JWT_KEY = "nimza";
   mongo = new MongoMemoryServer();
-  const mongoUri = await mongo.getUri();
+  await mongo.start();
+  const mongoUri = mongo.getUri();
   await mongoose.connect(mongoUri);
-}
+});
 
-async function beforeEach() {
+beforeEach(async () => {
   const collections = await mongoose.connection.db.collections();
 
   for (let collection of collections) {
     collection.deleteMany({});
   }
-}
+});
 
-async function afterAll() {
+afterAll(async () => {
   mongo.stop();
   await mongoose.connection.close();
-}
+});
