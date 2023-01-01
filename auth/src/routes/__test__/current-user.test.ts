@@ -17,5 +17,15 @@ it("Respond with current user details", async () => {
     .set("Cookie", cookie)
     .send()
     .expect(200);
+
   expect(response.body.currentUser.email).toEqual("nima@yahoo.com");
+});
+
+it("Recieve null when user is not authenticated", async () => {
+  const response = await request(app)
+    .get("/api/users/currentuser")
+    .send()
+    .expect(200);
+
+  expect(response.body.currentUser).toEqual(null);
 });
