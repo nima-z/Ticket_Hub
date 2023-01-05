@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import useRequest from "../../hooks/useRequest";
+import Router from "next/router";
 
 export default function signup() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,9 @@ export default function signup() {
     body: {
       email,
       password,
+    },
+    onSuccess: () => {
+      Router.push("/");
     },
   });
 
