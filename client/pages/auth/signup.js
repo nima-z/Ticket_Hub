@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import axios from "axios";
+import useRequest from "../../hooks/useRequest";
 
 export default function signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState([]);
+
+  const { requestHandle, errors } = useRequest({
+    url: "/api/users/signup",
+    method: "post",
+    body: {
+      email,
+      password,
+    },
+  });
 
   function emailHandle(e) {
     setEmail(e.target.value);
@@ -15,20 +23,10 @@ export default function signup() {
 
   async function onSubmit(event) {
     event.preventDefault();
-
-    try {
-      const response = await axios.post("/api/users/signup", {
-        email,
-        password,
-      });
-
-      console.log(response.data);
-    } catch (err) {
-      setErrors(err.response.data.errors);
-    }
+    requestHandle();
   }
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} style={{ width: "600px", margin: "100px auto" }}>
       <h1>Sign Up</h1>
       <div className="form-group">
         <label htmlFor="email">Email</label>
@@ -50,15 +48,7 @@ export default function signup() {
           onChange={passwordHandle}
         />
       </div>
-      {errors && (
-        <div className="alert alert-danger">
-          <ul className="my-0">
-            {errors.map((error) => (
-              <li key={error.message}>{error.message}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {errors}
       <button className="btn btn-primary">Sign Up</button>
     </form>
   );
