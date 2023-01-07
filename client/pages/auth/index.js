@@ -1,20 +1,25 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/router";
+//=======================================================
 import useRequest from "../../hooks/useRequest";
-import Router from "next/router";
+//=======================================================
 
-export default function signup() {
+export default function auth() {
+  const [isSigned, setIsSigned] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const router = useRouter();
+
   const { requestHandle, errors } = useRequest({
-    url: "/api/users/signup",
+    url: `/api/users/${isSigned ? "signin" : "signup"}`,
     method: "post",
     body: {
       email,
       password,
     },
     onSuccess: () => {
-      Router.push("/");
+      router.push("/");
     },
   });
 
@@ -29,6 +34,11 @@ export default function signup() {
     event.preventDefault();
     requestHandle();
   }
+
+  function changeForm() {
+    setIsSigned((prev) => !prev);
+  }
+
   return (
     <form onSubmit={onSubmit} style={{ width: "600px", margin: "100px auto" }}>
       <h1>Sign Up</h1>
@@ -53,7 +63,25 @@ export default function signup() {
         />
       </div>
       {errors}
-      <button className="btn btn-primary">Sign Up</button>
+      <button type="submit" className="btn btn-primary">
+        Submit
+      </button>
+      {isSigned ? (
+        <div>
+          <p>Not have an account?</p>
+          <button type="button" onClick={changeForm}>
+            Create account
+          </button>
+        </div>
+      ) : (
+        <div>
+          <p>Already have an account?</p>
+          <button type="button" onClick={changeForm}>
+            Sign in
+          </button>
+        </div>
+      )}
     </form>
   );
 }
+s;
