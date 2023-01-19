@@ -6,6 +6,7 @@ import { errorHandler, NotFoundError, currentUser } from "@nztickethub/common";
 import { createTicketRouter } from "./routes/new";
 import { showTicketRouter } from "./routes/show";
 import { showAllTicketsRouter } from "./routes/showAll";
+import { updateTicketRouter } from "./routes/update";
 //===========================================================
 
 export const app = express();
@@ -23,6 +24,7 @@ app.use(currentUser);
 app.use(createTicketRouter);
 app.use(showTicketRouter);
 app.use(showAllTicketsRouter);
+app.use(updateTicketRouter);
 
 app.all("*", async () => {
   throw new NotFoundError();
