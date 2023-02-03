@@ -13,6 +13,11 @@ const stan = nats.connect("tickethub", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("listener connected to nats");
 
+  stan.on("close", () => {
+    console.log("NATS connection is closed");
+    process.exit();
+  });
+
   // we can add option to our channel as the third argument
   // in order to save event in case of failure, we can set the ack mode TRUE
   // in Ack mode TRUE, the nats server will constantly send a same event to another instance until we tell the server that everything is ok.
@@ -40,3 +45,6 @@ stan.on("connect", () => {
     msg.ack();
   });
 });
+
+process.on("SIGINT", () => stan.close());
+process.on("SIGTERM", () => stan.close());
