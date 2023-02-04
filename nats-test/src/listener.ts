@@ -13,6 +13,7 @@ const stan = nats.connect("tickethub", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("listener connected to nats");
 
+  // to kill the process before closing the channel
   stan.on("close", () => {
     console.log("NATS connection is closed");
     process.exit();
@@ -20,9 +21,14 @@ stan.on("connect", () => {
 
   // we can add option to our channel as the third argument
   // in order to save event in case of failure, we can set the ack mode TRUE
-  // in Ack mode TRUE, the nats server will constantly send a same event to another instance until we tell the server that everything is ok.
+  // in Ack mode TRUE, the nats server will constantly send a same event to another instance
+  // until we tell the server that everything is ok.
 
-  const options = stan.subscriptionOptions().setManualAckMode(true);
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+    .setDeliverAllAvailable()
+    .setDurableName("ticket-service");
 
   // all same instances will receive a same event
   // to send an event to only one instance of a service, we have to create a QUEUE GROUP
@@ -46,5 +52,7 @@ stan.on("connect", () => {
   });
 });
 
+// before closing the client (channel), we can manually kill the process (shuting down)
+// to prevent creating any additioanl channel by nats streaming
 process.on("SIGINT", () => stan.close());
 process.on("SIGTERM", () => stan.close());
