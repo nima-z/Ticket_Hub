@@ -12,9 +12,22 @@ async function startServer() {
   if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI most be defined");
   }
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID most be defined");
+  }
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NATS_CLLUSTER_ID most be defined");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL most be defined");
+  }
 
   try {
-    await natsWrapper.connect("tickethub", "fdg24", "http://nats-srv:4222");
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID,
+      process.env.NATS_CLIENT_ID,
+      process.env.NATS_URL
+    );
 
     natsWrapper.client.on("close", () => {
       console.log("NATS connection is closed");
