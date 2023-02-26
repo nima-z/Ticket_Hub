@@ -3,18 +3,24 @@ import mongoose from "mongoose";
 import { passwordHasher } from "../services/password";
 //============================================================================
 
+//input from user
 interface UserAttrs {
   email: string;
   password: string;
 }
 
-interface UserModel extends mongoose.Model<UserDoc> {
-  build(attrs: UserAttrs): UserDoc;
-}
-
+// saved data
 interface UserDoc extends mongoose.Document {
   email: string;
   password: string;
+}
+
+// the reason that we have two seperate interfaces for userattrs and userdoc,
+// is that creating a new item might be different than the actual final item.
+
+// model to build data based on user input
+interface UserModel extends mongoose.Model<UserDoc> {
+  build(attrs: UserAttrs): UserDoc;
 }
 
 const userSchema = new mongoose.Schema(
