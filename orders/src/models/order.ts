@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { OrderStatus } from "@nztickethub/common";
 import { TicketDoc } from "./ticket";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 export { OrderStatus };
 
@@ -16,6 +17,7 @@ interface OrderDoc extends mongoose.Document {
   status: OrderStatus;
   expiresAt: Date;
   ticket: TicketDoc;
+  version: number;
 }
 
 // the reason that we have two seperate interfaces for userattrs and userdoc, which are identical,
@@ -57,6 +59,8 @@ const orderSchema = new mongoose.Schema(
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);
 
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 // creating build method based on Order Model
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);
